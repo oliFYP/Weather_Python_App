@@ -1,5 +1,7 @@
 import customtkinter
 import requests
+from datetime import datetime
+import pytz
 
 customtkinter.set_appearance_mode("System")
 customtkinter.set_default_color_theme("blue")
@@ -22,11 +24,12 @@ def get_weather():
             f"https://api.openweathermap.org/data/2.5/weather?q={client_input}&units=metric&APPID={api_key}")
         weather = weather_data.json()['weather'][0]['main']
         temp = weather_data.json()['main']['temp']
-        
-        result_label.configure(text=f"{client_input}\n{temp}°C\n{weather_icons.get(weather, "")} ", pady=10)
 
-        
-     
+        # Get the current time in the local time zone of the entered city
+        city_timezone = weather_data.json()['timezone']
+        local_time = datetime.utcfromtimestamp(datetime.now().timestamp() + city_timezone).strftime("%H:%M:%S")
+
+        result_label.configure(text=f"{client_input}\n{temp}°C\n{weather_icons.get(weather, '')}\nLocal Time: {local_time}", pady=10)
 
     except Exception as e:
         result_label.configure(text="Invalid City")
